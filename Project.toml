@@ -1,0 +1,10 @@
+name = "PositionMeasurements"
+uuid = "4f50160c-5eac-4c4e-9f5f-045f60a7a294"
+authors = ["Marcos Gil <marcosgildeoliveira@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+ClassicalOrthogonalPolynomials = "b30e2e7b-c4ee-47da-9d5f-2c5c27239acd"
+Integrals = "de52edbc-65ea-441a-8357-d3a637375a31"
+PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+Tullio = "bc48ee85-29a4-5162-ae0b-a64e1601d4bc"
