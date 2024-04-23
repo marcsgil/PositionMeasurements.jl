@@ -45,8 +45,8 @@ function transverse_basis(order)
     [(r, par) -> hg(r[1], r[2], order - n, n) for n ∈ 0:order]
 end
 
-function trasnverse_basis(order, pars...)
-    [(r, par) -> hg(r[1], r[2], order - n, n, pars...) for n ∈ 0:order]
+function transverse_basis(order, x₀, y₀, γx, γy)
+    [(r, par) -> hg(r[1], r[2], order - n, n, x₀, y₀, γx, γy) for n ∈ 0:order]
 end
 
 function transverse_basis(xd, yd, xc, yc, order, angle)
