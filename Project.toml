@@ -1,7 +1,7 @@
 name = "PositionMeasurements"
 uuid = "4f50160c-5eac-4c4e-9f5f-045f60a7a294"
 authors = ["Marcos Gil <marcosgildeoliveira@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 ClassicalOrthogonalPolynomials = "b30e2e7b-c4ee-47da-9d5f-2c5c27239acd"

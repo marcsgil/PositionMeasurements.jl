@@ -14,18 +14,18 @@ Random.seed!(1234)  # Set the seed for reproducibility
         unitary_transform!(astig_operators, mode_converter)
         operators = compose_povm(direct_operators, astig_operators)
         li = LinearInversion(operators)
-        bi = BayesianInference(operators, 10^5, 10^3)
+        bi = BayesianInference(operators)
 
         N = 5
         for n ∈ 1:N
-            ρ = sample_ginibri_state(order + 1)
+            ρ = sample(GinibreEnsamble(order + 1))
             θ = π / (order + 1)
             images = label2image(ρ, rs, θ)
             @test fidelity(prediction(images, li), ρ) ≥ 0.995
 
             normalize!(images, 1)
             simulate_outcomes!(images, 2^15)
-            σ, _ = prediction(images, bi)
+            σ, _ = prediction(images, bi, nsamples=10^5)
             @test fidelity(σ, ρ) ≥ 0.99
         end
     end

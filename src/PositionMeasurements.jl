@@ -37,8 +37,16 @@ function hg(x, y, m, n)
     N * hermiteh(m, x) * hermiteh(n, y) * exp(-(x^2 + y^2) / 2)
 end
 
+function hg(x, y, m, n, x₀, y₀, γx, γy)
+    hg((x - x₀) / γx, (y - y₀) / γy, m, n)
+end
+
 function transverse_basis(order)
     [(r, par) -> hg(r[1], r[2], order - n, n) for n ∈ 0:order]
+end
+
+function trasnverse_basis(order, pars...)
+    [(r, par) -> hg(r[1], r[2], order - n, n, pars...) for n ∈ 0:order]
 end
 
 function transverse_basis(xd, yd, xc, yc, order, angle)
