@@ -38,7 +38,7 @@ function hg(x, y, m, n)
 end
 
 function hg(x, y, m, n, x₀, y₀, γx, γy)
-    hg((x - x₀) / γx, (y - y₀) / γy, m, n)
+    hg((x - x₀) / γx, (y - y₀) / γy, m, n) / √(γx * γy)
 end
 
 function transverse_basis(order)
