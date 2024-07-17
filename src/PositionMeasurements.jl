@@ -1,6 +1,6 @@
 module PositionMeasurements
 
-using Integrals, ClassicalOrthogonalPolynomials, Tullio
+using Integrals, ClassicalOrthogonalPolynomials, Tullio, LinearAlgebra
 
 export assemble_position_operators, transverse_basis, label2image, label2image!
 
@@ -14,7 +14,7 @@ function assemble_position_operators(xs, ys, basis)
 
     function integrand!(y, r, par)
         for k ∈ eachindex(basis), j ∈ eachindex(basis)
-            y[j, k] = conj(basis[j](r, par)) * basis[k](r, par)
+            y[j, k] = conj(basis[j](r[1], r[2])) * basis[k](r[1], r[2])
         end
     end
 
@@ -26,6 +26,14 @@ function assemble_position_operators(xs, ys, basis)
             domain = [xs[m] - Δx, ys[n] - Δy], [xs[m] + Δx, ys[n] + Δy]
             prob = IntegralProblem(f, domain)
             operators[m, n] = solve(prob, HCubatureJL()).u
+        end
+    end
+
+    Ns = sqrt.(sum(diag, operators))
+
+    for Π ∈ operators
+        for n ∈ axes(Π, 2), m ∈ axes(Π, 1)
+            Π[m, n] /= (Ns[m] * Ns[n])
         end
     end
 
@@ -42,11 +50,11 @@ function hg(x, y, m, n, x₀, y₀, γx, γy)
 end
 
 function transverse_basis(order)
-    [(r, par) -> hg(r[1], r[2], order - n, n) for n ∈ 0:order]
+    [(x, y) -> hg(x, y, order - n, n) for n ∈ 0:order]
 end
 
 function transverse_basis(order, x₀, y₀, γx, γy)
-    [(r, par) -> hg(r[1], r[2], order - n, n, x₀, y₀, γx, γy) for n ∈ 0:order]
+    [(x, y) -> hg(x, y, order - n, n, x₀, y₀, γx, γy) for n ∈ 0:order]
 end
 
 function transverse_basis(xd, yd, xc, yc, order, angle)
