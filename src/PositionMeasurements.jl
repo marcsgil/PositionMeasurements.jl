@@ -1,40 +1,27 @@
 module PositionMeasurements
 
-using Integrals, ClassicalOrthogonalPolynomials, Tullio, LinearAlgebra
+using ClassicalOrthogonalPolynomials, Tullio, LinearAlgebra
 
 export assemble_position_operators, transverse_basis, label2image, label2image!
 
 using PrecompileTools: @setup_workload, @compile_workload
 
 function assemble_position_operators(xs, ys, basis)
-    operators = Matrix{Matrix{ComplexF32}}(undef, length(xs), length(ys))
+    T = complex(float(eltype(xs)))
+    Π = Matrix{T}(undef, length(basis), length(basis))
+    operators = Matrix{Matrix{T}}(undef, length(xs), length(ys))
 
-    Δx = (xs[2] - xs[1]) / 2
-    Δy = (ys[2] - ys[1]) / 2
+    Δx = xs[2] - xs[1]
+    Δy = ys[2] - ys[1]
+    ΔA = Δx * Δy
 
-    function integrand!(y, r, par)
-        for k ∈ eachindex(basis), j ∈ eachindex(basis)
-            y[j, k] = conj(basis[j](r[1], r[2])) * basis[k](r[1], r[2])
+
+    for (n, y) ∈ enumerate(ys), (m, x) ∈ enumerate(xs)
+        for (k, ψ) ∈ enumerate(basis), j ∈ eachindex(basis)
+            ϕ = basis[j]
+            Π[j, k] = conj(ϕ(x, y)) * ψ(x, y) * ΔA
         end
-    end
-
-    prototype = zeros(ComplexF32, length(basis), length(basis))
-    f = IntegralFunction(integrand!, prototype)
-
-    Threads.@threads for n ∈ eachindex(ys)
-        for m ∈ eachindex(xs)
-            domain = [xs[m] - Δx, ys[n] - Δy], [xs[m] + Δx, ys[n] + Δy]
-            prob = IntegralProblem(f, domain)
-            operators[m, n] = solve(prob, HCubatureJL()).u
-        end
-    end
-
-    Ns = sqrt.(sum(diag, operators))
-
-    for Π ∈ operators
-        for n ∈ axes(Π, 2), m ∈ axes(Π, 1)
-            Π[m, n] /= (Ns[m] * Ns[n])
-        end
+        operators[m, n] = copy(Π)
     end
 
     operators
